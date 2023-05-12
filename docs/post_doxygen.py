@@ -38,15 +38,13 @@ import sys
 # 2. Find all external links, remove the .html suffix
 # 3. Open all external links in new browser window
 
-folder = sys.argv[1] + "/html"
+folder = f"{sys.argv[1]}/html"
 
 # Fix all .html files
 for file in os.listdir(folder):
   if file.endswith('.html'):
-    f = open(os.path.join(folder, file), 'r', errors='ignore')
-    filedata = f.read()
-    f.close()
-
+    with open(os.path.join(folder, file), 'r', errors='ignore') as f:
+      filedata = f.read()
     # find: 'href="https://' than find '.html"' and replace with '" target="_blank"'
     pos = len(filedata)
     while True:
@@ -60,22 +58,18 @@ for file in os.listdir(folder):
 
       # except sqlite functions
       if 'sqlite' in filedata[pos:replace]:
-        filedata = filedata[:replace+6] + ' target="_blank"' + filedata[replace+6:]
+        filedata = f'{filedata[:replace + 6]} target="_blank"{filedata[replace + 6:]}'
         continue
 
-      filedata = filedata[:replace] + '" target="_blank"' + filedata[replace+6:]
+      filedata = f'{filedata[:replace]}" target="_blank"{filedata[replace + 6:]}'
 
-    f = open(os.path.join(folder, file),'w')
-    f.write(filedata)
-    f.close()
-
+    with open(os.path.join(folder, file),'w') as f:
+      f.write(filedata)
 # Fix all .js files
 for file in os.listdir(folder):
   if file.endswith('.js'):
-    f = open(os.path.join(folder, file), 'r', errors='ignore')
-    filedata = f.read()
-    f.close()
-
+    with open(os.path.join(folder, file), 'r', errors='ignore') as f:
+      filedata = f.read()
     # find: 'href="https://' than find '.html"' and replace with '" target="_blank"'
     pos = len(filedata)
     while True:
@@ -91,8 +85,7 @@ for file in os.listdir(folder):
       if 'sqlite' in filedata[pos:replace]:
         continue
 
-      filedata = filedata[:replace] + '"' + filedata[replace + 6]
+      filedata = f'{filedata[:replace]}"{filedata[replace + 6]}'
 
-    f = open(os.path.join(folder, file),'w')
-    f.write(filedata)
-    f.close()
+    with open(os.path.join(folder, file),'w') as f:
+      f.write(filedata)
